@@ -42,7 +42,7 @@ public class Dict {
                 // if Slang goes with Definition
                 if (line_data.length > 1) {
                 	// split Definitions into array
-                	String[] line_value = line_data[1].split(Pattern.quote(" | "));
+                	String[] line_value = line_data[1].split(Pattern.quote("| "));
                 	ArrayList<String> definitions 
                 		= new ArrayList<String>(Arrays.asList(line_value));
                 	

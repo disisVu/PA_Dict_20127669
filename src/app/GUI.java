@@ -16,6 +16,7 @@ public class GUI implements ItemListener {
 	static Dict dict = new Dict();
 	static HashMap<String, String> search_history = new HashMap<>();
 	static DefaultTableModel history_model;
+	static Font bigFont = new Font("SansSerif", Font.PLAIN, 20);        
 	static Border margin = BorderFactory.createEmptyBorder(20, 20, 20, 20);
 	 
 	public static void addButton(Container pane, String button_text) {
@@ -27,16 +28,20 @@ public class GUI implements ItemListener {
 		
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
-		pane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		pane.setBorder(margin);
 		
 		// search bar
 		JTextField text_field = new JTextField(20);
 		text_field.setBorder(new LineBorder(Color.GRAY, 2));
-		text_field.setPreferredSize(new Dimension(30,20));
+		text_field.setFont(bigFont);
 		
-		// result list
-		JList<String> list = new JList<String>();
-		DefaultListModel<String> listmodel = new DefaultListModel<String>();
+		// result definition
+		JPanel mid_panel = new JPanel();
+		mid_panel.setLayout(new BoxLayout(mid_panel, BoxLayout.Y_AXIS));
+		
+		JLabel label = new JLabel();
+		label.setFont(bigFont);
+		label.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
 		
 		// listen on TextField enter
 		text_field.addActionListener(new ActionListener() {
@@ -46,14 +51,13 @@ public class GUI implements ItemListener {
 				ArrayList<String> definitions = dict.searchBySlang(slang.toUpperCase());
 				
 				if (definitions != null) {
-					String[] data = new String[definitions.size()];
-					data = definitions.toArray(data);
-					list.setListData(data);
+					String definition_string = String.join(" | ", definitions);
+					label.setText(definition_string);				
 					// update search history table
-					history_model.addRow(new String[] {slang, Arrays.toString(data)});
+					history_model.addRow(new String[] {slang, definition_string});
 				}
 				else {
-					list.setModel(listmodel);
+					label.setText("");
 					// update search history table
 					history_model.addRow(new String[] {slang, "(none)"});
 				}
@@ -61,15 +65,14 @@ public class GUI implements ItemListener {
 		});	
 		pane.add(text_field, BorderLayout.PAGE_START);
 		
-		list.setLayoutOrientation(JList.VERTICAL);
-		list.setVisibleRowCount(-1);	
-		list.setBorder(margin);
-		pane.add(list, BorderLayout.CENTER);
+		mid_panel.add(label);
+		pane.add(mid_panel, BorderLayout.CENTER);
 		
 		return pane;
 	}
 	
 	public static JPanel searchByDefinitionPanel() {
+		
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
 		pane.setBorder(margin);
@@ -77,7 +80,7 @@ public class GUI implements ItemListener {
 		// search bar
 		JTextField text_field = new JTextField(20);
 		text_field.setBorder(new LineBorder(Color.GRAY, 2));
-		text_field.setPreferredSize(new Dimension(30,20));
+		text_field.setFont(bigFont);
 		
 		// result list
 		JList<String> list = new JList<String>();
@@ -105,6 +108,7 @@ public class GUI implements ItemListener {
 		
 		list.setLayoutOrientation(JList.VERTICAL);
 		list.setVisibleRowCount(-1);
+		list.setFont(bigFont);
 		list.setBorder(margin);
 		pane.add(list, BorderLayout.CENTER);
 		
@@ -376,10 +380,9 @@ public class GUI implements ItemListener {
 		ArrayList<String> random_definition = dict.data.get(random_slang);
 		
 		// convert ArrayList<String> to String
-		String[] data = new String[random_definition.size()];
-		data = random_definition.toArray(data);
+		String definition_string = String.join(" | ", random_definition);
 		
-		String result = random_slang + " ` " + Arrays.toString(data);
+		String result = random_slang + " ` " + definition_string;
 		
 		return result;
 	}
@@ -394,6 +397,7 @@ public class GUI implements ItemListener {
 		
 		// display random slang
 		JLabel label = new JLabel(result);		
+		label.setFont(bigFont);
 		pane.add(label, BorderLayout.PAGE_START);
 		
 		// generate next random slang button
@@ -405,7 +409,22 @@ public class GUI implements ItemListener {
 			}
 		});
 		
-		pane.add(random_btn, BorderLayout.PAGE_END);
+		JPanel mid_panel = new JPanel();
+		mid_panel.setLayout(new BoxLayout(mid_panel, BoxLayout.Y_AXIS));
+		mid_panel.add(random_btn);
+		mid_panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+		
+		pane.add(mid_panel, BorderLayout.CENTER);
+		
+		return pane;
+	}
+	
+	public static JPanel slangQuiz() {
+		JPanel pane = new JPanel();
+		pane.setLayout(new BorderLayout());
+		
+		JPanel top_panel = new JPanel();
+		
 		
 		return pane;
 	}
