@@ -93,13 +93,7 @@ public class Dict {
 	}
 
 	public static void main(String[] args) {
-		long startTime = System.nanoTime();
-		Dict dict = new Dict();
-		dict.importDictionary(".//src/slang.txt");
-		long endTime = System.nanoTime();
-//		System.out.println((dict.data.get(">.<")));
-		System.out.println(dict.data);
-		System.out.println((float)(endTime - startTime) / 1000000000);
+		// do nothing
 	}
 
 }
