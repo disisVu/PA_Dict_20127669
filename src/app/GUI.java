@@ -6,7 +6,6 @@ import java.util.regex.Pattern;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -14,7 +13,6 @@ import javax.swing.table.DefaultTableModel;
 public class GUI implements ItemListener {
 	
 	JPanel cards;
-	static Dict default_dict = new Dict();
 	static Dict dict = new Dict();
 	
 	public static void addButton(Container pane, String button_text) {
@@ -138,9 +136,11 @@ public class GUI implements ItemListener {
         
 		String[] columns = {"slang", "definition"};
 		
-		DefaultTableModel model = new DefaultTableModel(matrix, columns);
+//		DefaultTableModel default_model = new DefaultTableModel(matrix, columns);
+//		final DefaultTableModel model = new DefaultTableModel(matrix, columns);
+		
 		JTable table = new JTable();
-		table.setModel(model);
+		table.setModel(new DefaultTableModel(matrix, columns));
 		table.setBounds(30,40,200,300);          
 	    JScrollPane scroll_pane = new JScrollPane(table);
 	    pane.add(scroll_pane, BorderLayout.CENTER);
@@ -149,7 +149,8 @@ public class GUI implements ItemListener {
 	    JPanel btn_panel = new JPanel();
 	    btn_panel.setLayout(new FlowLayout());
 	    
-	    JButton add_btn = new JButton("Add slang"); 
+	    JButton add_btn = new JButton("Add slang");
+	    // add slang button event
 	    // popUp window
 	    // reference: https://stackoverflow.com/questions/8852560/how-to-make-popup-window-in-java
 	    add_btn.addActionListener(new ActionListener() {
@@ -164,47 +165,150 @@ public class GUI implements ItemListener {
 	    		
 	    		String[] options = {"Overwrite", "Duplicate"};
 	    		
-	    		// if slang has already existed
-	    		if (dict.data.get(add_slang) != null) {
-	    			// popUp window: overwrite or duplicate
-		    		// reference: https://mkyong.com/swing/java-swing-joptionpane-showoptiondialog-example/
-	    			int option_index = JOptionPane.showOptionDialog(pane, 
-	    					"Slang has already existed",
-	    					"Confirm?",
-	    					JOptionPane.DEFAULT_OPTION,
-	    					JOptionPane.INFORMATION_MESSAGE,
-	    					null,
-	    					options,
-	    					options[0]);
-	    			
-	    			switch (option_index) {
-	    			case 0:
+	    		if (add_definition != null) {    			
+	    			// if slang has already existed
+	    			if (dict.data.get(add_slang) != null) {
+	    				// popUp window: overwrite or duplicate
+	    				// reference: https://mkyong.com/swing/java-swing-joptionpane-showoptiondialog-example/
+	    				int option_index = JOptionPane.showOptionDialog(pane, 
+	    						"Slang has already existed",
+	    						"Confirm?",
+	    						JOptionPane.DEFAULT_OPTION,
+	    						JOptionPane.INFORMATION_MESSAGE,
+	    						null,
+	    						options,
+	    						options[0]);
+	    				
+	    				switch (option_index) {
 	    				// overwrite definition
+	    				case 0:
+	    					// update dictionary
+	    					dict.data.put(add_slang, new ArrayList<String>(Arrays.asList(
+	    							add_definition.split(Pattern.quote(" | ")))));				
+	    					// get row index of given slang
+	    					int row = 0;
+	    					for (int i = table.getModel().getRowCount() - 1; i >= 0; --i) {
+    				            if (table.getModel().getValueAt(i, 0).equals(add_slang)) {
+    				                // what if value is not unique?
+    				                row = i;
+    				            }
+	    				    }
+	    					// update table row
+	    					table.getModel().setValueAt(add_definition, row, 1);
+	    					
+	    					break;
+	    				
+	    				// duplicate slang
+	    				case 1:
+	    					// update dictionary
+	    					dict.data.put(add_slang + "~", new ArrayList<String>(Arrays.asList(
+	    							add_definition.split(Pattern.quote(" | ")))));
+	    					// add new row to table
+	    					((DefaultTableModel) table.getModel()).addRow(new String[] {add_slang + "~", add_definition});
+	    					break;
+	    				}
+	    			}
+	    			// if slang hasn't existed
+	    			else {
 	    				dict.data.put(add_slang, new ArrayList<String>(Arrays.asList(
 	    						add_definition.split(Pattern.quote(" | ")))));
-	    				model.addRow(new String[] {add_slang, add_definition});
-	    				break;
-	    			case 1:
-	    				// duplicate slang
-	    				dict.data.put(add_slang + "~", new ArrayList<String>(Arrays.asList(
-	    						add_definition.split(Pattern.quote(" | ")))));
-	    				model.addRow(new String[] {add_slang + "~", add_definition});
-	    				break;
+	    				// add new row to table
+	    				((DefaultTableModel) table.getModel()).addRow(new String[] {add_slang, add_definition});
 	    			}
-	    		}
-	    		else {
-	    			dict.data.put(add_slang, new ArrayList<String>(Arrays.asList(
-    						add_definition.split(Pattern.quote(" | ")))));
-	    			model.addRow(new String[] {add_slang, add_definition});
 	    		}
 	    	}
 	    });
 	    
 	    JButton edit_btn = new JButton("Edit slang");
+	    // edit slang button event
+	    edit_btn.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent evt) {  			    		
+	    		// edit slang by selecting table row
+	    		// reference: https://www.youtube.com/watch?v=Tg62AxNRir4
+	    		if (table.getSelectedRowCount() == 1) {
+	    			
+	    			int row = table.getSelectedRow();
+	    			
+	    			String edit_slang = table.getModel().getValueAt(row, 0).toString();
+	    			
+	    			String edit_definition = JOptionPane.showInputDialog(pane,
+		    				"new Slang definition: ", null);
+	    			
+	    			// if definition input field isn't empty
+	    			if (edit_definition != null) {
+	    				// update dictionary
+	    				dict.data.put(edit_slang, new ArrayList<String>(Arrays.asList(
+	    						edit_definition.split(Pattern.quote(" | ")))));	
+	    				// update table row
+	    				table.getModel().setValueAt(edit_definition, row, 1);			
+	    			}
+	    		}
+	    		else {
+	    			if (table.getSelectedRowCount() == 0) {
+	    				JOptionPane.showMessageDialog(null, "please select one row", 
+	    						"InfoBox", JOptionPane.INFORMATION_MESSAGE);
+	    			}
+	    			else {
+	    				JOptionPane.showMessageDialog(null, "can't select multiple row at once", 
+	    						"InfoBox", JOptionPane.INFORMATION_MESSAGE);
+	    			}
+	    		}
+	    	}
+	    });
 	    
 	    JButton delete_btn = new JButton("Delete slang");
+	    // delete slang button event
+	    delete_btn.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent evt) {
+	    		// delete slang by selecting table row
+	    		if (table.getSelectedRowCount() == 1) {
+	    			
+	    			// confirm dialog
+	    			// reference: https://mkyong.com/swing/java-swing-how-to-make-a-confirmation-dialog/
+	    			int confirmation = JOptionPane.showConfirmDialog(null, "Proceed to delete slang?");
+	    			
+	    			// YES = 0
+	    			if (confirmation == 0) {
+	    				int row = table.getSelectedRow();
+	    				
+	    				String delete_slang = table.getModel().getValueAt(row, 0).toString();
+	    				
+	    				// update dictionary
+	    				dict.data.remove(delete_slang);
+	    				
+	    				// update table row
+	    				((DefaultTableModel) table.getModel()).removeRow(row);		  				
+	    			}
+	    		}
+	    		else {
+	    			if (table.getSelectedRowCount() == 0) {
+	    				JOptionPane.showMessageDialog(null, "please select one row", 
+	    						"InfoBox", JOptionPane.INFORMATION_MESSAGE);
+	    			}
+	    			else {
+	    				JOptionPane.showMessageDialog(null, "can't select multiple row at once", 
+	    						"InfoBox", JOptionPane.INFORMATION_MESSAGE);
+	    			}
+	    		}
+	    	}
+	    });
 	    
 	    JButton reset_btn = new JButton("Reset table");
+	    // reset dictionary button event
+	    reset_btn.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent evt) {
+	    		int confirmation = JOptionPane.showConfirmDialog(null, "Proceed to reset dictionary?");
+    			
+    			// YES = 0
+    			if (confirmation == 0) {				
+    				// reset dictionary
+    				dict.importDictionary(".//src/slang.txt");
+    				
+    				// update table
+    				table.setModel(new DefaultTableModel(matrix, columns));  				
+    			}
+	    	}
+	    });
 	    
 	    btn_panel.add(add_btn);
 	    btn_panel.add(edit_btn);
@@ -283,8 +387,7 @@ public class GUI implements ItemListener {
 	} 
 
 	public static void main(String[] args) {
-		default_dict.importDictionary(".//src/slang.txt");
-		dict = default_dict;
+		dict.importDictionary(".//src/slang.txt");
 		createAndShowGUI();
 	}
 
