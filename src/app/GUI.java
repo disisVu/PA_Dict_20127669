@@ -118,6 +118,7 @@ public class GUI implements ItemListener {
 	
 	// slang search history
 	public static JPanel slangSearchHistory() {
+		
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
 		pane.setBorder(margin);
@@ -135,6 +136,8 @@ public class GUI implements ItemListener {
 		
 		JTable table = new JTable();
 		table.setModel(history_model);
+		table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		table.setRowHeight(30);
 		table.setBounds(30,40,200,300);          
 	    JScrollPane scroll_pane = new JScrollPane(table);
 	    
@@ -164,7 +167,7 @@ public class GUI implements ItemListener {
 	        	= (Map.Entry<String, ArrayList<String>>)new_iterator.next();
 	    	
 	    	table[i][0] = new_element.getKey();      	
-	    	table[i][1] = String.join("| ", new_element.getValue());
+	    	table[i][1] = String.join(" | ", new_element.getValue());
 	    	
 	    	i++;
 	    }
@@ -188,6 +191,8 @@ public class GUI implements ItemListener {
 		
 		JTable table = new JTable();
 		table.setModel(new DefaultTableModel(matrix, columns));
+		table.setFont(new Font("SansSerif", Font.PLAIN, 14));
+		table.setRowHeight(30);
 		table.setBounds(30,40,200,300);          
 	    JScrollPane scroll_pane = new JScrollPane(table);
 	    pane.add(scroll_pane, BorderLayout.CENTER);
@@ -389,6 +394,7 @@ public class GUI implements ItemListener {
 	}
 	
 	public static JPanel randomSlangPanel() {
+		
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
 		pane.setBorder(margin);
@@ -421,6 +427,7 @@ public class GUI implements ItemListener {
 	}
 	
 	public static JPanel slangQuiz() {
+		
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
 		pane.setBorder(margin);
@@ -439,9 +446,7 @@ public class GUI implements ItemListener {
 		String correct_answer = String.join(" | ", dict.data.get(correct_slang));
 		answers.add(String.join(" | ", dict.data.get(correct_slang)));
 		
-//		String[] wrong_slang = new String[3];
 		for (int i = 0; i < 3; i++) {
-//			wrong_slang[i] = slangs.get(rng.nextInt(slangs.size()));
 			answers.add(String.join(" | ", 
 					dict.data.get(slangs.get(rng.nextInt(slangs.size())))));
 		}
@@ -533,6 +538,7 @@ public class GUI implements ItemListener {
 	}
 	
 	public static JPanel definitionQuiz() {
+		
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
 		pane.setBorder(margin);

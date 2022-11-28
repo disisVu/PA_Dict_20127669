@@ -34,6 +34,10 @@ public class Dict {
 			BufferedReader br = new BufferedReader(new FileReader(filename));		
 			
 			String line = "";
+			
+			// Skip first line
+			br.readLine();
+			
             while ((line = br.readLine()) != null) {
             	
             	// split into Slang and Definitions
