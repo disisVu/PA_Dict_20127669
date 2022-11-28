@@ -6,10 +6,9 @@ import java.util.regex.Pattern;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
-
-
 
 public class GUI implements ItemListener {
 	
@@ -17,6 +16,7 @@ public class GUI implements ItemListener {
 	static Dict dict = new Dict();
 	static HashMap<String, String> search_history = new HashMap<>();
 	static DefaultTableModel history_model;
+	static Border margin = BorderFactory.createEmptyBorder(20, 20, 20, 20);
 	 
 	public static void addButton(Container pane, String button_text) {
 		JButton button = new JButton(button_text);
@@ -27,6 +27,7 @@ public class GUI implements ItemListener {
 		
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
+		pane.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		
 		// search bar
 		JTextField text_field = new JTextField(20);
@@ -62,6 +63,7 @@ public class GUI implements ItemListener {
 		
 		list.setLayoutOrientation(JList.VERTICAL);
 		list.setVisibleRowCount(-1);	
+		list.setBorder(margin);
 		pane.add(list, BorderLayout.CENTER);
 		
 		return pane;
@@ -70,6 +72,7 @@ public class GUI implements ItemListener {
 	public static JPanel searchByDefinitionPanel() {
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
+		pane.setBorder(margin);
 		
 		// search bar
 		JTextField text_field = new JTextField(20);
@@ -101,7 +104,8 @@ public class GUI implements ItemListener {
 		pane.add(text_field, BorderLayout.PAGE_START);
 		
 		list.setLayoutOrientation(JList.VERTICAL);
-		list.setVisibleRowCount(-1);	
+		list.setVisibleRowCount(-1);
+		list.setBorder(margin);
 		pane.add(list, BorderLayout.CENTER);
 		
 		return pane;
@@ -111,6 +115,7 @@ public class GUI implements ItemListener {
 	public static JPanel slangSearchHistory() {
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
+		pane.setBorder(margin);
 		
 		// feature label
 		JLabel label = new JLabel("Table view");
@@ -164,6 +169,7 @@ public class GUI implements ItemListener {
 	public static JPanel manageDictionary() {
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
+		pane.setBorder(margin);
 		
 		// feature label
 		JLabel label = new JLabel("Table view");
@@ -356,6 +362,54 @@ public class GUI implements ItemListener {
 	    return pane;
 	}
 	
+	public static String generateRandomSlangWithDefinition() {
+		// random generator
+		Random rng = new Random();
+		
+		// get slang list
+		ArrayList<String> slangs = new ArrayList<String>(dict.data.keySet());
+		
+		// get random slang
+		String random_slang = slangs.get(rng.nextInt(slangs.size()));
+		
+		// get definition of random slang above
+		ArrayList<String> random_definition = dict.data.get(random_slang);
+		
+		// convert ArrayList<String> to String
+		String[] data = new String[random_definition.size()];
+		data = random_definition.toArray(data);
+		
+		String result = random_slang + " ` " + Arrays.toString(data);
+		
+		return result;
+	}
+	
+	public static JPanel randomSlangPanel() {
+		JPanel pane = new JPanel();
+		pane.setLayout(new BorderLayout());
+		pane.setBorder(margin);
+		
+		// generate random slang
+		String result = generateRandomSlangWithDefinition();
+		
+		// display random slang
+		JLabel label = new JLabel(result);		
+		pane.add(label, BorderLayout.PAGE_START);
+		
+		// generate next random slang button
+		JButton random_btn = new JButton("Generate new random slang");
+		random_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				String result = generateRandomSlangWithDefinition();
+				label.setText(result);
+			}
+		});
+		
+		pane.add(random_btn, BorderLayout.PAGE_END);
+		
+		return pane;
+	}
+	
 	public void menuPane(Container menu_pane) {
 		
 		// check if menu_pane is using BorderLayout
@@ -370,12 +424,12 @@ public class GUI implements ItemListener {
 		top_panel.setLayout(new BoxLayout(top_panel, BoxLayout.Y_AXIS));
 		
 		// Menu options drop-down
-		String menu_option[] = {"Search by Slang",
+		String menu_option[] = {"Search by Slang word",
 								"Search by Definition",
-								"Slang search history",
+								"Slang word search history",
 								"Manage Dictionary",
-								"Random Slang",
-								"Slang Quiz",
+								"Random Slang word",
+								"Slang word Quiz",
 								"Definition Quiz"};
 		JComboBox<String> cb = new JComboBox<String>(menu_option);
 		cb.setPreferredSize(new Dimension(200,50));
@@ -389,16 +443,19 @@ public class GUI implements ItemListener {
 		cards = new JPanel(new CardLayout());
 	
 		JPanel card1 = searchBySlangPanel();
-		cards.add(card1, "Search by Slang");
+		cards.add(card1, "Search by Slang word");
 		
 		JPanel card2 = searchByDefinitionPanel();
 		cards.add(card2, "Search by Definition");
 		
 		JPanel card3 = slangSearchHistory();
-		cards.add(card3, "Slang search history");
+		cards.add(card3, "Slang word search history");
 		
 		JPanel card4 = manageDictionary();
 		cards.add(card4, "Manage Dictionary");
+		
+		JPanel card5 = randomSlangPanel();
+		cards.add(card5, "Random Slang word");
 		
 		menu_pane.add(cards, BorderLayout.CENTER);
 	}
@@ -419,9 +476,11 @@ public class GUI implements ItemListener {
 		gui.menuPane(frame.getContentPane());
 
 		frame.pack();	
+		
 		// center window on screen
 		// reference: https://stackoverflow.com/questions/144892/how-to-center-a-window-in-java
 		frame.setLocationRelativeTo(null);
+		
 		frame.setVisible(true);
 	} 
 
