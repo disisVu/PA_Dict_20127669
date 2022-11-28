@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
 
@@ -14,7 +15,9 @@ public class GUI implements ItemListener {
 	
 	JPanel cards;
 	static Dict dict = new Dict();
-	
+	static HashMap<String, String> search_history = new HashMap<>();
+	static DefaultTableModel history_model;
+	 
 	public static void addButton(Container pane, String button_text) {
 		JButton button = new JButton(button_text);
 		pane.add(button);
@@ -27,6 +30,7 @@ public class GUI implements ItemListener {
 		
 		// search bar
 		JTextField text_field = new JTextField(20);
+		text_field.setBorder(new LineBorder(Color.GRAY, 2));
 		text_field.setPreferredSize(new Dimension(30,20));
 		
 		// result list
@@ -44,12 +48,16 @@ public class GUI implements ItemListener {
 					String[] data = new String[definitions.size()];
 					data = definitions.toArray(data);
 					list.setListData(data);
+					// update search history table
+					history_model.addRow(new String[] {slang, Arrays.toString(data)});
 				}
 				else {
 					list.setModel(listmodel);
+					// update search history table
+					history_model.addRow(new String[] {slang, "(none)"});
 				}
 			}
-		});
+		});	
 		pane.add(text_field, BorderLayout.PAGE_START);
 		
 		list.setLayoutOrientation(JList.VERTICAL);
@@ -65,6 +73,7 @@ public class GUI implements ItemListener {
 		
 		// search bar
 		JTextField text_field = new JTextField(20);
+		text_field.setBorder(new LineBorder(Color.GRAY, 2));
 		text_field.setPreferredSize(new Dimension(30,20));
 		
 		// result list
@@ -94,6 +103,34 @@ public class GUI implements ItemListener {
 		list.setLayoutOrientation(JList.VERTICAL);
 		list.setVisibleRowCount(-1);	
 		pane.add(list, BorderLayout.CENTER);
+		
+		return pane;
+	}
+	
+	// slang search history
+	public static JPanel slangSearchHistory() {
+		JPanel pane = new JPanel();
+		pane.setLayout(new BorderLayout());
+		
+		// feature label
+		JLabel label = new JLabel("Table view");
+		pane.add(label, BorderLayout.PAGE_START);
+		
+		// history table
+		String[][] matrix = new String[0][2];
+		
+		String[] columns = {"slang", "definition"};
+		
+		history_model = new DefaultTableModel(matrix, columns);
+		
+		JTable table = new JTable();
+		table.setModel(history_model);
+		table.setBounds(30,40,200,300);          
+	    JScrollPane scroll_pane = new JScrollPane(table);
+	    
+	    pane.add(scroll_pane, BorderLayout.CENTER);
+	    
+	    pane.revalidate();
 		
 		return pane;
 	}
@@ -129,15 +166,14 @@ public class GUI implements ItemListener {
 		pane.setLayout(new BorderLayout());
 		
 		// feature label
-		JLabel label = new JLabel("Dictionary Manager");
+		JLabel label = new JLabel("Table view");
 		pane.add(label, BorderLayout.PAGE_START);
 		
+		// import dictionary to matrix
 		String[][] matrix = importDictToMatrix(dict);
         
+		// table heading
 		String[] columns = {"slang", "definition"};
-		
-//		DefaultTableModel default_model = new DefaultTableModel(matrix, columns);
-//		final DefaultTableModel model = new DefaultTableModel(matrix, columns);
 		
 		JTable table = new JTable();
 		table.setModel(new DefaultTableModel(matrix, columns));
@@ -336,7 +372,7 @@ public class GUI implements ItemListener {
 		// Menu options drop-down
 		String menu_option[] = {"Search by Slang",
 								"Search by Definition",
-								"View search history",
+								"Slang search history",
 								"Manage Dictionary",
 								"Random Slang",
 								"Slang Quiz",
@@ -357,6 +393,9 @@ public class GUI implements ItemListener {
 		
 		JPanel card2 = searchByDefinitionPanel();
 		cards.add(card2, "Search by Definition");
+		
+		JPanel card3 = slangSearchHistory();
+		cards.add(card3, "Slang search history");
 		
 		JPanel card4 = manageDictionary();
 		cards.add(card4, "Manage Dictionary");

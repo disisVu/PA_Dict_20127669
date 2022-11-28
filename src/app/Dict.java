@@ -18,7 +18,7 @@ public class Dict {
         // Sort the list using lambda expression
         Collections.sort(list, (i1, i2) -> i1.getKey().compareTo(i2.getKey()));
  
-        // put data from sorted list to hashmap
+        // transfer data from sorted list to HashMap
         HashMap<String, ArrayList<String>> temp
             = new LinkedHashMap<String, ArrayList<String>>();
         
