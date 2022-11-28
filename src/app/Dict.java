@@ -98,7 +98,7 @@ public class Dict {
 		dict.importDictionary(".//src/slang.txt");
 		long endTime = System.nanoTime();
 //		System.out.println((dict.data.get(">.<")));
-		System.out.println(dict.searchByDefinition("angry"));
+		System.out.println(dict.data);
 		System.out.println((float)(endTime - startTime) / 1000000000);
 	}
 

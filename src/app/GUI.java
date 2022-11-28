@@ -13,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 public class GUI implements ItemListener {
 	
 	JPanel cards;
+	static int correct_index = 0;
 	static Dict dict = new Dict();
 	static HashMap<String, String> search_history = new HashMap<>();
 	static DefaultTableModel history_model;
@@ -32,7 +33,7 @@ public class GUI implements ItemListener {
 		
 		// search bar
 		JTextField text_field = new JTextField(20);
-		text_field.setBorder(new LineBorder(Color.GRAY, 2));
+		text_field.setBorder(new LineBorder(Color.gray, 2));
 		text_field.setFont(bigFont);
 		
 		// result definition
@@ -79,7 +80,7 @@ public class GUI implements ItemListener {
 		
 		// search bar
 		JTextField text_field = new JTextField(20);
-		text_field.setBorder(new LineBorder(Color.GRAY, 2));
+		text_field.setBorder(new LineBorder(Color.gray, 2));
 		text_field.setFont(bigFont);
 		
 		// result list
@@ -422,9 +423,222 @@ public class GUI implements ItemListener {
 	public static JPanel slangQuiz() {
 		JPanel pane = new JPanel();
 		pane.setLayout(new BorderLayout());
+		pane.setBorder(margin);
 		
-		JPanel top_panel = new JPanel();
+		// random generator
+		Random rng = new Random();
 		
+		// get slang list
+		ArrayList<String> slangs = new ArrayList<String>(dict.data.keySet());
+		
+		// answer list
+		ArrayList<String> answers = new ArrayList<String>();
+		
+		// get random slang
+		String correct_slang = slangs.get(rng.nextInt(slangs.size()));
+		String correct_answer = String.join(" | ", dict.data.get(correct_slang));
+		answers.add(String.join(" | ", dict.data.get(correct_slang)));
+		
+//		String[] wrong_slang = new String[3];
+		for (int i = 0; i < 3; i++) {
+//			wrong_slang[i] = slangs.get(rng.nextInt(slangs.size()));
+			answers.add(String.join(" | ", 
+					dict.data.get(slangs.get(rng.nextInt(slangs.size())))));
+		}
+		
+		// shuffle answer list
+		Collections.shuffle(answers);
+		
+		// get index of correct answer
+		for (int i = 0; i < 4; i++) {
+			if ((answers.get(i)).equals(correct_answer)) {
+				correct_index = i;
+			}
+		}
+		
+		// question
+		JLabel question = new JLabel("Definition of  [ " + correct_slang + " ] is");
+		question.setFont(bigFont);
+		pane.add(question, BorderLayout.PAGE_START);
+		
+		// answers panel
+		JPanel mid_panel = new JPanel();
+		mid_panel.setLayout(new BoxLayout(mid_panel, BoxLayout.Y_AXIS));
+		mid_panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+		
+		JRadioButton btn1 = new JRadioButton(answers.get(0));
+		JRadioButton btn2 = new JRadioButton(answers.get(1));
+		JRadioButton btn3 = new JRadioButton(answers.get(2));
+		JRadioButton btn4 = new JRadioButton(answers.get(3));
+		
+		// group radio buttons
+		ButtonGroup group = new ButtonGroup();
+		group.add(btn1);
+		group.add(btn2);
+		group.add(btn3);
+		group.add(btn4);
+		
+		// result label
+		JLabel result = new JLabel();
+		result.setFont(new Font("SansSerif", Font.PLAIN, 18));
+		result.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+		
+		mid_panel.add(btn1);
+		mid_panel.add(btn2);
+		mid_panel.add(btn3);
+		mid_panel.add(btn4);
+		mid_panel.add(result);
+		
+		pane.add(mid_panel, BorderLayout.CENTER);
+		
+		// submit button
+		JButton submit_btn = new JButton("Submit choice");
+		submit_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				int choice = 0;
+				
+				// get choice index
+				if (btn1.isSelected()) {
+					choice = 0;
+				}
+				else if (btn2.isSelected()) {
+					choice = 1;
+				}
+				else if (btn3.isSelected()) {
+					choice = 2;
+				}
+				else if (btn4.isSelected()) {
+					choice = 3;
+				}
+				
+				// verify correct/false answer
+				if (choice == correct_index) {
+					result.setText("Correct!");
+					result.setForeground(Color.decode("#3aaa07"));
+				}
+				else {
+					result.setText("False, please try again.");
+					result.setForeground(Color.red);
+				}
+			}
+		});
+		
+		// bottom panel
+		JPanel bot_panel = new JPanel();
+		bot_panel.add(submit_btn);
+		
+		pane.add(bot_panel, BorderLayout.PAGE_END);
+		
+		return pane;
+	}
+	
+	public static JPanel definitionQuiz() {
+		JPanel pane = new JPanel();
+		pane.setLayout(new BorderLayout());
+		pane.setBorder(margin);
+		
+		// random generator
+		Random rng = new Random();
+		
+		// get slang list
+		ArrayList<String> slangs = new ArrayList<String>(dict.data.keySet());
+		
+		// answer list
+		ArrayList<String> answers = new ArrayList<String>();
+		
+		// get random slang
+		String correct_slang = slangs.get(rng.nextInt(slangs.size()));
+		String correct_definition = String.join(" | ", dict.data.get(correct_slang));
+		answers.add(correct_slang);
+		
+		for (int i = 0; i < 3; i++) {
+			answers.add(slangs.get(rng.nextInt(slangs.size())));
+		}
+		
+		// shuffle answer list
+		Collections.shuffle(answers);
+		
+		// get index of correct answer
+		String value = "";
+		for (int i = 0; i < 4; i++) {
+			value = String.join(" | ", dict.data.get(answers.get(i)));
+			if (value.equals(correct_definition)) {
+				correct_index = i;
+			}
+		}
+		
+		// question
+		JLabel question = new JLabel("Slang word defined as \"" + correct_definition + "\" is");
+		question.setFont(bigFont);
+		pane.add(question, BorderLayout.PAGE_START);
+		
+		// answers panel
+		JPanel mid_panel = new JPanel();
+		mid_panel.setLayout(new BoxLayout(mid_panel, BoxLayout.Y_AXIS));
+		mid_panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+		
+		JRadioButton btn1 = new JRadioButton(answers.get(0));
+		JRadioButton btn2 = new JRadioButton(answers.get(1));
+		JRadioButton btn3 = new JRadioButton(answers.get(2));
+		JRadioButton btn4 = new JRadioButton(answers.get(3));
+		
+		// group radio buttons
+		ButtonGroup group = new ButtonGroup();
+		group.add(btn1);
+		group.add(btn2);
+		group.add(btn3);
+		group.add(btn4);
+		
+		// result label
+		JLabel result = new JLabel();
+		result.setFont(new Font("SansSerif", Font.PLAIN, 18));
+		result.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+		
+		mid_panel.add(btn1);
+		mid_panel.add(btn2);
+		mid_panel.add(btn3);
+		mid_panel.add(btn4);
+		mid_panel.add(result);
+		
+		pane.add(mid_panel, BorderLayout.CENTER);
+		
+		// submit button
+		JButton submit_btn = new JButton("Submit choice");
+		submit_btn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				int choice = 0;
+				
+				// get choice index
+				if (btn1.isSelected()) {
+					choice = 0;
+				}
+				else if (btn2.isSelected()) {
+					choice = 1;
+				}
+				else if (btn3.isSelected()) {
+					choice = 2;
+				}
+				else if (btn4.isSelected()) {
+					choice = 3;
+				}
+				
+				// verify correct/false answer
+				if (choice == correct_index) {
+					result.setText("Correct!");
+					result.setForeground(Color.decode("#3aaa07"));
+				}
+				else {
+					result.setText("False, please try again.");
+					result.setForeground(Color.red);
+				}
+			}
+		});
+		
+		// bottom panel
+		JPanel bot_panel = new JPanel();
+		bot_panel.add(submit_btn);
+		
+		pane.add(bot_panel, BorderLayout.PAGE_END);
 		
 		return pane;
 	}
@@ -452,6 +666,7 @@ public class GUI implements ItemListener {
 								"Definition Quiz"};
 		JComboBox<String> cb = new JComboBox<String>(menu_option);
 		cb.setPreferredSize(new Dimension(200,50));
+		cb.setFont(bigFont);
 		cb.setEditable(false);
         cb.addItemListener(this);
         top_panel.add(cb);
@@ -475,6 +690,12 @@ public class GUI implements ItemListener {
 		
 		JPanel card5 = randomSlangPanel();
 		cards.add(card5, "Random Slang word");
+		
+		JPanel card6 = slangQuiz();
+		cards.add(card6, "Slang word Quiz");
+		
+		JPanel card7 = definitionQuiz();
+		cards.add(card7, "Definition Quiz");
 		
 		menu_pane.add(cards, BorderLayout.CENTER);
 	}
@@ -504,8 +725,23 @@ public class GUI implements ItemListener {
 	} 
 
 	public static void main(String[] args) {
+
+		long startTime = System.nanoTime();
+		
+		// application
 		dict.importDictionary(".//src/slang.txt");
 		createAndShowGUI();
+		
+		long endTime = System.nanoTime();
+		
+		// calculate start-up time
+		double time = (double)(endTime - startTime) / 1000000000;
+		
+		// round to 3 decimals
+		time = Math.round(time * 1000.00) / 1000.00;
+		
+		// execution time
+		System.out.println("Application start-up time = " + time + "s");
 	}
 
 }
