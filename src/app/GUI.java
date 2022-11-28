@@ -556,6 +556,7 @@ public class GUI implements ItemListener {
 		}
 		
 		// shuffle answer list
+		// reference: https://stackoverflow.com/questions/1519736/random-shuffling-of-an-array
 		Collections.shuffle(answers);
 		
 		// get index of correct answer
