@@ -31,6 +31,9 @@ public class Dict {
 	// import dictionary data into HashMap
 	public void importDictionary(String filename) {
 		try {			
+			// clear HashMap
+			this.data.clear();
+			
 			BufferedReader br = new BufferedReader(new FileReader(filename));		
 			
 			String line = "";

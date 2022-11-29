@@ -13,7 +13,7 @@ import javax.swing.table.DefaultTableModel;
 public class GUI implements ItemListener {
 	
 	JPanel cards;
-	static int correct_index = 0;
+	static int[] correct_index = {0, 0};
 	static Dict dict = new Dict();
 	static HashMap<String, String> search_history = new HashMap<>();
 	static DefaultTableModel history_model;
@@ -53,12 +53,14 @@ public class GUI implements ItemListener {
 				
 				if (definitions != null) {
 					String definition_string = String.join(" | ", definitions);
+					label.setForeground(Color.black);
 					label.setText(definition_string);				
 					// update search history table
 					history_model.addRow(new String[] {slang, definition_string});
 				}
 				else {
-					label.setText("");
+					label.setForeground(Color.red);
+					label.setText("(no definition)");
 					// update search history table
 					history_model.addRow(new String[] {slang, "(none)"});
 				}
@@ -444,7 +446,7 @@ public class GUI implements ItemListener {
 		// get random slang
 		String correct_slang = slangs.get(rng.nextInt(slangs.size()));
 		String correct_answer = String.join(" | ", dict.data.get(correct_slang));
-		answers.add(String.join(" | ", dict.data.get(correct_slang)));
+		answers.add(correct_answer);
 		
 		for (int i = 0; i < 3; i++) {
 			answers.add(String.join(" | ", 
@@ -457,7 +459,7 @@ public class GUI implements ItemListener {
 		// get index of correct answer
 		for (int i = 0; i < 4; i++) {
 			if ((answers.get(i)).equals(correct_answer)) {
-				correct_index = i;
+				correct_index[0] = i;
 			}
 		}
 		
@@ -517,7 +519,7 @@ public class GUI implements ItemListener {
 				}
 				
 				// verify correct/false answer
-				if (choice == correct_index) {
+				if (choice == correct_index[0]) {
 					result.setText("Correct!");
 					result.setForeground(Color.decode("#3aaa07"));
 				}
@@ -570,7 +572,7 @@ public class GUI implements ItemListener {
 		for (int i = 0; i < 4; i++) {
 			value = String.join(" | ", dict.data.get(answers.get(i)));
 			if (value.equals(correct_definition)) {
-				correct_index = i;
+				correct_index[1] = i;
 			}
 		}
 		
@@ -630,7 +632,7 @@ public class GUI implements ItemListener {
 				}
 				
 				// verify correct/false answer
-				if (choice == correct_index) {
+				if (choice == correct_index[1]) {
 					result.setText("Correct!");
 					result.setForeground(Color.decode("#3aaa07"));
 				}
@@ -733,7 +735,7 @@ public class GUI implements ItemListener {
 
 	public static void main(String[] args) {
 		// application
-		dict.importDictionary("./slang.txt");
+		dict.importDictionary(".//src/slang.txt");
 		createAndShowGUI();
 	}
 
