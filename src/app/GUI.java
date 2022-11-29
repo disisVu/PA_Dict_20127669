@@ -732,23 +732,9 @@ public class GUI implements ItemListener {
 	} 
 
 	public static void main(String[] args) {
-
-		long startTime = System.nanoTime();
-		
 		// application
-		dict.importDictionary(".//src/slang.txt");
+		dict.importDictionary("./slang.txt");
 		createAndShowGUI();
-		
-		long endTime = System.nanoTime();
-		
-		// calculate start-up time
-		double time = (double)(endTime - startTime) / 1000000000;
-		
-		// round to 3 decimals
-		time = Math.round(time * 1000.00) / 1000.00;
-		
-		// execution time
-		System.out.println("Application start-up time = " + time + "s");
 	}
 
 }
