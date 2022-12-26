@@ -19,7 +19,7 @@ public class GUI implements ItemListener {
 	static DefaultTableModel history_model;
 	static Font bigFont = new Font("SansSerif", Font.PLAIN, 20);        
 	static Border margin = BorderFactory.createEmptyBorder(20, 20, 20, 20);
-	 
+	
 	public static void addButton(Container pane, String button_text) {
 		JButton button = new JButton(button_text);
 		pane.add(button);
@@ -356,7 +356,7 @@ public class GUI implements ItemListener {
     			// YES = 0
     			if (confirmation == 0) {				
     				// reset dictionary
-    				dict.importDictionary(".//src/slang.txt");
+    				dict.importDictionary("./slang.txt");
     				
     				// update table
     				table.setModel(new DefaultTableModel(matrix, columns));  				
@@ -735,7 +735,7 @@ public class GUI implements ItemListener {
 
 	public static void main(String[] args) {
 		// application
-		dict.importDictionary(".//src/slang.txt");
+		dict.importDictionary("./slang.txt");
 		createAndShowGUI();
 	}
 
